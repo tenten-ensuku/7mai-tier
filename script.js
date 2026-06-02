@@ -1,5 +1,5 @@
 const STORAGE_KEY = "nanamai-tier-state-v2";
-const APP_VERSION = 7;
+const APP_VERSION = 8;
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
@@ -281,6 +281,11 @@ document.getElementById("resetButton").addEventListener("click", () => {
 
 document.getElementById("appVersion").textContent = `ver${APP_VERSION}`;
 
+document.querySelector(".generated-wait-cover").addEventListener("click", (event) => {
+  event.stopPropagation();
+  document.getElementById("generatorResult").classList.toggle("waits-revealed");
+});
+
 document.querySelectorAll(".generator-button").forEach((button) => {
   button.addEventListener("click", () => generatePracticeShape(button.dataset.generator));
 });
@@ -292,13 +297,16 @@ function generatePracticeShape(kind) {
   const pool = GENERATED_TEMPLATES[kind] || [];
   if (!pool.length) return;
   const template = pool[Math.floor(Math.random() * pool.length)];
-  const hand = randomizeTemplate(template);
+  const generated = randomizeTemplate(template);
   const suit = ["m", "p", "s"][Math.floor(Math.random() * 3)];
   const result = document.getElementById("generatorResult");
   const tiles = result.querySelector(".generated-tiles");
+  const waits = result.querySelector(".generated-wait-tiles");
   const meta = result.querySelector(".generated-meta");
+  result.classList.remove("waits-revealed");
   tiles.innerHTML = "";
-  hand.forEach((number) => {
+  waits.innerHTML = "";
+  generated.hand.forEach((number) => {
     const img = document.createElement("img");
     img.className = "tile";
     img.src = suitedTilePath(suit, number);
@@ -306,7 +314,15 @@ function generatePracticeShape(kind) {
     img.draggable = false;
     tiles.append(img);
   });
-  meta.textContent = `${GENERATOR_LABELS[kind]} / ${hand.join("")}${suit}`;
+  generated.waits.forEach((number) => {
+    const img = document.createElement("img");
+    img.className = "tile";
+    img.src = suitedTilePath(suit, number);
+    img.alt = `${number}${suit}`;
+    img.draggable = false;
+    waits.append(img);
+  });
+  meta.textContent = `${GENERATOR_LABELS[kind]} / ${generated.hand.join("")}${suit}`;
 }
 
 function buildGeneratorTemplates() {
@@ -319,7 +335,12 @@ function buildGeneratorTemplates() {
   SHAPES.forEach((shape) => {
     if (shape.hand.some((value) => value > 9)) return;
     const category = classifyTemplate(shape.hand);
-    if (category) pools[category].push([...shape.hand].sort((a, b) => a - b));
+    if (category) {
+      pools[category].push({
+        hand: [...shape.hand].sort((a, b) => a - b),
+        waits: [...shape.waits].sort((a, b) => a - b),
+      });
+    }
   });
   return pools;
 }
@@ -339,12 +360,19 @@ function hasQuad(hand) {
 }
 
 function randomizeTemplate(template) {
-  const min = Math.min(...template);
-  const max = Math.max(...template);
+  const min = Math.min(...template.hand);
+  const max = Math.max(...template.hand);
   const shift = randomInt(1 - min, 9 - max);
-  let hand = template.map((value) => value + shift);
-  if (Math.random() < 0.5) hand = hand.map((value) => 10 - value);
-  return hand.sort((a, b) => a - b);
+  let hand = template.hand.map((value) => value + shift);
+  let waits = template.waits.map((value) => value + shift);
+  if (Math.random() < 0.5) {
+    hand = hand.map((value) => 10 - value);
+    waits = waits.map((value) => 10 - value);
+  }
+  return {
+    hand: hand.sort((a, b) => a - b),
+    waits: [...new Set(waits)].sort((a, b) => a - b),
+  };
 }
 
 function randomInt(min, max) {
