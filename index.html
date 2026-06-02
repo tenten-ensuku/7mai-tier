@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>7枚形ティア表</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>7枚形ティア表</h1>
+      <p>エンスクドリル7枚形 A-S / 19種類</p>
+    </div>
+    <div class="toolbar" aria-label="操作">
+      <label class="toggle">
+        <input id="answerToggle" type="checkbox">
+        <span>待ち表示</span>
+      </label>
+      <button id="resetButton" type="button">初期化</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="tier-board" aria-label="ティア表">
+      <div class="tier-row" data-tier="S神">
+        <div class="tier-label">S神</div>
+        <div class="drop-zone" data-zone="S"></div>
+      </div>
+      <div class="tier-row" data-tier="A強い">
+        <div class="tier-label">A強い</div>
+        <div class="drop-zone" data-zone="A"></div>
+      </div>
+      <div class="tier-row" data-tier="B普通">
+        <div class="tier-label">B普通</div>
+        <div class="drop-zone" data-zone="B"></div>
+      </div>
+      <div class="tier-row" data-tier="C弱い">
+        <div class="tier-label">C弱い</div>
+        <div class="drop-zone" data-zone="C"></div>
+      </div>
+    </section>
+
+    <section class="generator-section" aria-label="7枚形生成">
+      <div class="pool-heading">
+        <h2>生成練習</h2>
+        <p>条件をクリックするとランダムに7枚形を生成します</p>
+      </div>
+      <div class="generator-grid">
+        <button class="generator-button" type="button" data-generator="seqSeq">順子順子+1枚</button>
+        <button class="generator-button" type="button" data-generator="tripTrip">暗刻暗刻+1枚</button>
+        <button class="generator-button" type="button" data-generator="tripSeq">暗刻+順子+1枚</button>
+        <button class="generator-button" type="button" data-generator="quad">槓子使い</button>
+      </div>
+      <div class="generator-result" id="generatorResult">
+        <div class="generator-title">生成結果</div>
+        <div class="generated-tiles" aria-label="生成牌姿"></div>
+        <div class="generated-meta"></div>
+      </div>
+    </section>
+
+    <section class="card-pool">
+      <div class="pool-heading">
+        <h2>カード置き場</h2>
+        <p>カード名は直接入力できます</p>
+      </div>
+      <div class="drop-zone pool-grid" data-zone="pool" id="pool"></div>
+    </section>
+  </main>
+
+  <template id="cardTemplate">
+    <article class="shape-card" draggable="true">
+      <button class="flip-button" type="button" aria-label="カードを裏返す">↻</button>
+      <div class="card-face card-front">
+        <div class="card-top">
+          <div class="card-name" contenteditable="true" spellcheck="false" aria-label="カード名"></div>
+          <div class="count-box">
+            <input class="count-input" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="受け入れ枚数">
+            <span class="count-cover" aria-hidden="true"></span>
+          </div>
+        </div>
+        <div class="tiles" aria-label="牌姿"></div>
+        <div class="answer-line"></div>
+      </div>
+      <div class="card-face card-back" aria-label="積み木表示">
+        <div class="stack-view"></div>
+        <div class="mark-bar" aria-label="待ち牌選択"></div>
+      </div>
+    </article>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>
