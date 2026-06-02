@@ -499,15 +499,16 @@ main {
   position: relative;
   width: 100%;
   min-height: 58px;
-  display: grid;
-  grid-template-rows: 30px 24px;
-  place-items: center;
-  row-gap: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 
 .wait-reveal {
   position: relative;
-  width: 100%;
+  flex: 0 0 150px;
+  width: 150px;
   min-height: 30px;
   display: grid;
   place-items: center;
@@ -516,14 +517,15 @@ main {
 .wait-line {
   width: 100%;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   text-align: center;
+  white-space: nowrap;
 }
 
 .wait-cover {
   position: absolute;
-  inset: 4px 14px 3px;
+  inset: 4px 0 3px;
   min-height: 0;
   padding: 0;
   border: 0;
@@ -541,6 +543,7 @@ main {
   align-items: center;
   justify-content: center;
   gap: 2px;
+  flex: 0 0 auto;
   min-height: 24px;
   color: var(--ink);
   font-size: 13px;
