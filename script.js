@@ -1,5 +1,5 @@
 const STORAGE_KEY = "nanamai-tier-state-v2";
-const APP_VERSION = 6;
+const APP_VERSION = 7;
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
@@ -220,8 +220,11 @@ function renderStack(card, shape) {
     }
     container.append(column);
     const button = document.createElement("button");
-    button.className = `mark-button${shapeMarks.has(value) ? " is-selected" : ""}`;
+    const isMarked = shapeMarks.has(value);
+    const isCorrect = shape.waits.includes(value);
+    button.className = `mark-button${isMarked ? " is-selected" : ""}${isMarked && isCorrect ? " is-correct" : ""}${isMarked && !isCorrect ? " is-wrong" : ""}`;
     button.type = "button";
+    button.dataset.value = value;
     button.setAttribute("aria-label", `${tileInfo(value).label}をマーキング`);
     button.addEventListener("click", (event) => {
       event.stopPropagation();
