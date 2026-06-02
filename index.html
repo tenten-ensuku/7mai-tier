@@ -70,15 +70,20 @@
       <div class="card-face card-front">
         <div class="card-top">
           <div class="card-name" aria-label="カード名"></div>
-          <div class="count-box">
-            <input class="count-input" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="受け入れ枚数">
-            <span class="count-cover" aria-hidden="true"></span>
-          </div>
         </div>
         <div class="tiles" aria-label="牌姿"></div>
         <div class="wait-box">
-          <div class="wait-line"></div>
-          <button class="wait-cover" type="button" aria-label="待ち牌を表示"></button>
+          <div class="wait-reveal">
+            <div class="wait-line"></div>
+            <button class="wait-cover" type="button" aria-label="待ち牌を表示"></button>
+          </div>
+          <div class="count-row">
+            <div class="count-box">
+              <input class="count-input" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="受け入れ枚数">
+              <span class="count-cover" aria-hidden="true"></span>
+            </div>
+            <span class="count-unit">枚</span>
+          </div>
         </div>
       </div>
       <div class="card-face card-back" aria-label="積み木表示">

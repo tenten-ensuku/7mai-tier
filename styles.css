@@ -213,7 +213,7 @@ main {
 }
 
 .card-front {
-  grid-template-rows: 34px 52px 58px;
+  grid-template-rows: 34px 48px 64px;
 }
 
 .card-back {
@@ -261,9 +261,7 @@ main {
   width: 100%;
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 30px;
-  align-items: center;
-  column-gap: 4px;
+  place-items: center;
 }
 
 .card-name {
@@ -302,19 +300,19 @@ main {
 
 .count-box {
   position: relative;
-  width: 30px;
-  height: 26px;
+  width: 34px;
+  height: 22px;
 }
 
 .count-input {
-  width: 30px;
-  height: 26px;
+  width: 34px;
+  height: 22px;
   border: 0;
   border-bottom: 2px solid transparent;
   background: transparent;
   color: #1d6fe8;
   font-family: "M PLUS Rounded 1c", "Yu Gothic", "Meiryo", system-ui, sans-serif;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 900;
   line-height: 1;
   text-align: center;
@@ -323,7 +321,7 @@ main {
 
 .count-cover {
   position: absolute;
-  inset: 3px 1px 2px;
+  inset: 2px 0;
   display: none;
   place-items: center;
   border-radius: 3px;
@@ -455,7 +453,17 @@ main {
 .wait-box {
   position: relative;
   width: 100%;
-  min-height: 38px;
+  min-height: 58px;
+  display: grid;
+  grid-template-rows: 30px 24px;
+  place-items: center;
+  row-gap: 2px;
+}
+
+.wait-reveal {
+  position: relative;
+  width: 100%;
+  min-height: 30px;
   display: grid;
   place-items: center;
 }
@@ -470,7 +478,7 @@ main {
 
 .wait-cover {
   position: absolute;
-  inset: 7px 14px 6px;
+  inset: 4px 14px 3px;
   min-height: 0;
   padding: 0;
   border: 0;
@@ -481,6 +489,21 @@ main {
 
 .shape-card.wait-revealed .wait-cover {
   display: none;
+}
+
+.count-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 24px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.count-unit {
+  line-height: 1;
 }
 
 @media (max-width: 760px) {
