@@ -276,6 +276,23 @@ main {
   outline: none;
   overflow-wrap: anywhere;
   user-select: none;
+  cursor: pointer;
+}
+
+.shape-card.name-concealed .card-name {
+  color: transparent;
+  caret-color: transparent;
+}
+
+.shape-card.name-concealed .card-name::after {
+  content: "";
+  position: absolute;
+  inset: 4px 8px;
+  display: block;
+  border-radius: 3px;
+  background: #171417;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  pointer-events: none;
 }
 
 .count-box {

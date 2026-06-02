@@ -109,10 +109,14 @@ function saveState() {
 function createCard(shape, name, count) {
   const card = document.getElementById("cardTemplate").content.firstElementChild.cloneNode(true);
   card.dataset.id = shape.id;
-  card.classList.add("count-concealed");
+  card.classList.add("name-concealed", "count-concealed");
   card.title = `${shape.id}: ${shape.hand.join("")}`;
   const cardName = card.querySelector(".card-name");
   cardName.textContent = name || "";
+  cardName.addEventListener("click", (event) => {
+    event.stopPropagation();
+    card.classList.toggle("name-concealed");
+  });
   const countInput = card.querySelector(".count-input");
   countInput.value = count || String(shape.count);
   card.querySelector(".count-cover").addEventListener("click", (event) => {
