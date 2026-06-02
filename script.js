@@ -1,4 +1,5 @@
 const STORAGE_KEY = "nanamai-tier-state-v2";
+const APP_VERSION = 5;
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
@@ -274,6 +275,8 @@ document.getElementById("resetButton").addEventListener("click", () => {
   localStorage.removeItem(STORAGE_KEY);
   render();
 });
+
+document.getElementById("appVersion").textContent = `ver${APP_VERSION}`;
 
 document.querySelectorAll(".generator-button").forEach((button) => {
   button.addEventListener("click", () => generatePracticeShape(button.dataset.generator));

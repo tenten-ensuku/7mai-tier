@@ -49,6 +49,11 @@ h1 {
   font-size: 13px;
 }
 
+.app-version {
+  color: var(--accent);
+  font-weight: 900;
+}
+
 .toolbar {
   display: flex;
   align-items: center;
