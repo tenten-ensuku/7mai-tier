@@ -2,25 +2,25 @@ const STORAGE_KEY = "nanamai-tier-state-v2";
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
-  { id: "A", hand: [3, 4, 4, 5, 5, 5, 5], waits: [3, 4, 6], count: 9 },
-  { id: "B", hand: [3, 4, 5, 6, 7, 8, 9], waits: [3, 6, 9], count: 9 },
-  { id: "C", hand: [1, 2, 3, 4, 4, 5, 6], waits: [1, 4, 7], count: 9 },
-  { id: "D", hand: [2, 3, 4, 4, 4, 13, 13], waits: [1, 4, 13], count: 7 },
-  { id: "E", hand: [2, 3, 3, 3, 4, 5, 6], waits: [1, 2, 4, 7], count: 14 },
-  { id: "F", hand: [3, 3, 3, 4, 4, 5, 6], waits: [2, 4, 5, 7], count: 13 },
-  { id: "G", hand: [3, 3, 3, 4, 5, 5, 6], waits: [4, 5, 7], count: 9 },
-  { id: "H", hand: [3, 3, 3, 4, 5, 6, 7], waits: [2, 4, 5, 7, 8], count: 17 },
-  { id: "I", hand: [4, 4, 4, 5, 6, 7, 9], waits: [8, 9], count: 7 },
-  { id: "J", hand: [4, 4, 4, 6, 6, 7, 8], waits: [5, 6, 9], count: 10 },
-  { id: "K", hand: [3, 3, 3, 5, 6, 7, 8], waits: [4, 5, 8], count: 10 },
-  { id: "L", hand: [4, 4, 4, 5, 5, 6, 6], waits: [4, 5, 6, 7], count: 9 },
-  { id: "M", hand: [5, 5, 6, 6, 6, 7, 7], waits: [5, 6, 7], count: 5 },
-  { id: "N", hand: [2, 2, 2, 3, 4, 4, 4], waits: [1, 2, 3, 4, 5], count: 13 },
-  { id: "O", hand: [5, 5, 5, 6, 6, 6, 7], waits: [5, 6, 7, 8], count: 9 },
-  { id: "P", hand: [2, 2, 2, 4, 6, 6, 6], waits: [3, 4, 5], count: 11 },
-  { id: "Q", hand: [3, 3, 4, 5, 5, 5, 5], waits: [3, 4, 6], count: 9 },
-  { id: "R", hand: [5, 5, 6, 6, 6, 6, 7], waits: [4, 5, 7, 8], count: 13 },
-  { id: "S", hand: [5, 6, 6, 6, 6, 7, 8], waits: [4, 5, 7, 8], count: 13 },
+  { id: "A", name: "槓子使い", hand: [3, 4, 4, 5, 5, 5, 5], waits: [3, 4, 6], count: 9 },
+  { id: "B", name: "スーパーノベタン", hand: [3, 4, 5, 6, 7, 8, 9], waits: [3, 6, 9], count: 9 },
+  { id: "C", name: "両面ノベタン", hand: [1, 2, 3, 4, 4, 5, 6], waits: [1, 4, 7], count: 9 },
+  { id: "D", name: "エントツ", hand: [2, 3, 4, 4, 4, 13, 13], waits: [1, 4, 13], count: 7 },
+  { id: "E", name: "最強４面", hand: [2, 3, 3, 3, 4, 5, 6], waits: [1, 2, 4, 7], count: 14 },
+  { id: "F", name: "秀才４面", hand: [3, 3, 3, 4, 4, 5, 6], waits: [2, 4, 5, 7], count: 13 },
+  { id: "G", name: "子持ちししゃも3面", hand: [3, 3, 3, 4, 5, 5, 6], waits: [4, 5, 7], count: 9 },
+  { id: "H", name: "ヘラクレス5面", hand: [3, 3, 3, 4, 5, 6, 7], waits: [2, 4, 5, 7, 8], count: 17 },
+  { id: "I", name: "ゴルフ２面", hand: [4, 4, 4, 5, 6, 7, 9], waits: [8, 9], count: 7 },
+  { id: "J", name: "とび箱３面", hand: [4, 4, 4, 6, 6, 7, 8], waits: [5, 6, 9], count: 10 },
+  { id: "K", name: "マット３面", hand: [3, 3, 3, 5, 6, 7, 8], waits: [4, 5, 8], count: 10 },
+  { id: "L", name: "シャボ皮4面", hand: [4, 4, 4, 5, 5, 6, 6], waits: [4, 5, 6, 7], count: 9 },
+  { id: "M", name: "ダグトリオ最弱3面", hand: [5, 5, 6, 6, 6, 7, 7], waits: [5, 6, 7], count: 5 },
+  { id: "N", name: "サンドイッチ５面", hand: [2, 2, 2, 3, 4, 4, 4], waits: [1, 2, 3, 4, 5], count: 13 },
+  { id: "O", name: "満員電車４面", hand: [5, 5, 5, 6, 6, 6, 7], waits: [5, 6, 7, 8], count: 9 },
+  { id: "P", name: "ハンバーガー３面", hand: [2, 2, 2, 4, 6, 6, 6], waits: [3, 4, 5], count: 11 },
+  { id: "Q", name: "槓子使い", hand: [3, 3, 4, 5, 5, 5, 5], waits: [3, 4, 6], count: 9 },
+  { id: "R", name: "槓子使い", hand: [5, 5, 6, 6, 6, 6, 7], waits: [4, 5, 7, 8], count: 13 },
+  { id: "S", name: "槓子使い", hand: [5, 6, 6, 6, 6, 7, 8], waits: [4, 5, 7, 8], count: 13 },
 ];
 
 const zones = ["S", "A", "B", "C", "pool"];
@@ -109,21 +109,10 @@ function saveState() {
 function createCard(shape, name, count) {
   const card = document.getElementById("cardTemplate").content.firstElementChild.cloneNode(true);
   card.dataset.id = shape.id;
-  card.classList.add("name-concealed", "count-concealed");
+  card.classList.add("count-concealed");
   card.title = `${shape.id}: ${shape.hand.join("")}`;
   const cardName = card.querySelector(".card-name");
   cardName.textContent = name || "";
-  cardName.addEventListener("click", (event) => {
-    if (card.classList.contains("name-concealed")) {
-      event.preventDefault();
-      card.classList.remove("name-concealed");
-      cardName.focus();
-      return;
-    }
-    event.preventDefault();
-    card.classList.add("name-concealed");
-  });
-  cardName.addEventListener("blur", saveState);
   const countInput = card.querySelector(".count-input");
   countInput.value = count || String(shape.count);
   card.querySelector(".count-cover").addEventListener("click", (event) => {
@@ -151,7 +140,11 @@ function createCard(shape, name, count) {
     tiles.append(img);
   });
   renderStack(card, shape);
-  card.querySelector(".answer-line").textContent = `待ち ${waitText(shape.waits)} / ${shape.count}枚`;
+  card.querySelector(".wait-line").textContent = `待ち ${waitText(shape.waits)}`;
+  card.querySelector(".wait-cover").addEventListener("click", (event) => {
+    event.stopPropagation();
+    card.classList.toggle("wait-revealed");
+  });
 
   const flipButton = card.querySelector(".flip-button");
   flipButton.addEventListener("click", (event) => {
@@ -172,7 +165,6 @@ function createCard(shape, name, count) {
     card.classList.remove("dragging");
     saveState();
   });
-  cardName.addEventListener("input", saveState);
   countInput.addEventListener("dragstart", (event) => event.stopPropagation());
   return card;
 }
@@ -273,10 +265,6 @@ function setupDrops() {
     });
   });
 }
-
-document.getElementById("answerToggle").addEventListener("change", (event) => {
-  document.body.classList.toggle("show-answers", event.currentTarget.checked);
-});
 
 document.getElementById("resetButton").addEventListener("click", () => {
   localStorage.removeItem(STORAGE_KEY);

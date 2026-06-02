@@ -13,10 +13,6 @@
       <p>エンスクドリル7枚形 A-S / 19種類</p>
     </div>
     <div class="toolbar" aria-label="操作">
-      <label class="toggle">
-        <input id="answerToggle" type="checkbox">
-        <span>待ち表示</span>
-      </label>
       <button id="resetButton" type="button">初期化</button>
     </div>
   </header>
@@ -73,14 +69,17 @@
       <button class="flip-button" type="button" aria-label="カードを裏返す">↻</button>
       <div class="card-face card-front">
         <div class="card-top">
-          <div class="card-name" contenteditable="true" spellcheck="false" aria-label="カード名"></div>
+          <div class="card-name" aria-label="カード名"></div>
           <div class="count-box">
             <input class="count-input" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="受け入れ枚数">
             <span class="count-cover" aria-hidden="true"></span>
           </div>
         </div>
         <div class="tiles" aria-label="牌姿"></div>
-        <div class="answer-line"></div>
+        <div class="wait-box">
+          <div class="wait-line"></div>
+          <button class="wait-cover" type="button" aria-label="待ち牌を表示"></button>
+        </div>
       </div>
       <div class="card-face card-back" aria-label="積み木表示">
         <div class="stack-view"></div>
