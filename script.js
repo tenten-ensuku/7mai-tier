@@ -32,7 +32,7 @@ const GENERATOR_LABELS = {
   tripSeq: "暗刻+順子+1枚",
   quad: "槓子使い",
 };
-const GENERATED_POOLS = buildGeneratorPools();
+const GENERATED_TEMPLATES = buildGeneratorTemplates();
 
 function tileInfo(value) {
   if (value >= 11) {
@@ -44,6 +44,10 @@ function tileInfo(value) {
 function tilePath(value) {
   const tile = tileInfo(value);
   return `tiles/${SUIT_PREFIX[tile.suit]}${tile.number}-66-90-l.png`;
+}
+
+function suitedTilePath(suit, number) {
+  return `tiles/${SUIT_PREFIX[suit]}${number}-66-90-l.png`;
 }
 
 function waitText(waits) {
@@ -287,81 +291,96 @@ setupDrops();
 render();
 
 function generatePracticeShape(kind) {
-  const pool = GENERATED_POOLS[kind] || [];
+  const pool = GENERATED_TEMPLATES[kind] || [];
   if (!pool.length) return;
-  const hand = pool[Math.floor(Math.random() * pool.length)];
+  const template = pool[Math.floor(Math.random() * pool.length)];
+  const hand = randomizeTemplate(template);
+  const suit = ["m", "p", "s"][Math.floor(Math.random() * 3)];
   const result = document.getElementById("generatorResult");
   const tiles = result.querySelector(".generated-tiles");
   const meta = result.querySelector(".generated-meta");
   tiles.innerHTML = "";
-  hand.forEach((value) => {
+  hand.forEach((number) => {
     const img = document.createElement("img");
     img.className = "tile";
-    img.src = tilePath(value);
-    img.alt = tileInfo(value).label;
+    img.src = suitedTilePath(suit, number);
+    img.alt = `${number}${suit}`;
     img.draggable = false;
     tiles.append(img);
   });
-  meta.textContent = `${GENERATOR_LABELS[kind]} / ${hand.join("")}`;
+  meta.textContent = `${GENERATOR_LABELS[kind]} / ${hand.join("")}${suit}`;
 }
 
-function buildGeneratorPools() {
+function buildGeneratorTemplates() {
   const pools = {
-    seqSeq: new Map(),
-    tripTrip: new Map(),
-    tripSeq: new Map(),
-    quad: new Map(),
+    seqSeq: [],
+    tripTrip: [],
+    tripSeq: [],
+    quad: [],
   };
-  const sequences = Array.from({ length: 7 }, (_, index) => [index + 1, index + 2, index + 3]);
-  const triplets = Array.from({ length: 9 }, (_, index) => [index + 1, index + 1, index + 1]);
-  const addHand = (target, tiles) => {
-    const hand = [...tiles].sort((a, b) => a - b);
-    if (!isValidGeneratedHand(hand)) return;
-    target.set(hand.join(""), hand);
-  };
-
-  sequences.forEach((first) => {
-    sequences.forEach((second) => {
-      for (let loose = 1; loose <= 9; loose += 1) {
-        const hand = [...first, ...second, loose];
-        if (hasQuad(hand)) addHand(pools.quad, hand);
-        else addHand(pools.seqSeq, hand);
-      }
-    });
+  SHAPES.forEach((shape) => {
+    if (shape.hand.some((value) => value > 9)) return;
+    const category = classifyTemplate(shape.hand);
+    if (category) pools[category].push([...shape.hand].sort((a, b) => a - b));
   });
-
-  triplets.forEach((first, firstIndex) => {
-    triplets.forEach((second, secondIndex) => {
-      if (firstIndex === secondIndex) return;
-      for (let loose = 1; loose <= 9; loose += 1) {
-        const hand = [...first, ...second, loose];
-        if (hasQuad(hand)) addHand(pools.quad, hand);
-        else addHand(pools.tripTrip, hand);
-      }
-    });
-  });
-
-  triplets.forEach((triplet) => {
-    sequences.forEach((sequence) => {
-      for (let loose = 1; loose <= 9; loose += 1) {
-        const hand = [...triplet, ...sequence, loose];
-        if (hasQuad(hand)) addHand(pools.quad, hand);
-        else addHand(pools.tripSeq, hand);
-      }
-    });
-  });
-
-  return Object.fromEntries(Object.entries(pools).map(([key, value]) => [key, [...value.values()]]));
+  return pools;
 }
 
-function isValidGeneratedHand(hand) {
-  const counts = new Map();
-  hand.forEach((value) => counts.set(value, (counts.get(value) || 0) + 1));
-  return hand.length === 7 && [...counts.values()].every((count) => count <= 4);
+function classifyTemplate(hand) {
+  if (hasQuad(hand)) return "quad";
+  if (canMakeTwoSetsPlusLoose(hand, "trip", "trip")) return "tripTrip";
+  if (canMakeTwoSetsPlusLoose(hand, "seq", "seq")) return "seqSeq";
+  if (canMakeTwoSetsPlusLoose(hand, "trip", "seq")) return "tripSeq";
+  return null;
 }
 
 function hasQuad(hand) {
   const counts = new Map();
   hand.forEach((value) => counts.set(value, (counts.get(value) || 0) + 1));
   return [...counts.values()].some((count) => count === 4);
+}
+
+function randomizeTemplate(template) {
+  const min = Math.min(...template);
+  const max = Math.max(...template);
+  const shift = randomInt(1 - min, 9 - max);
+  let hand = template.map((value) => value + shift);
+  if (Math.random() < 0.5) hand = hand.map((value) => 10 - value);
+  return hand.sort((a, b) => a - b);
+}
+
+function randomInt(min, max) {
+  return min + Math.floor(Math.random() * (max - min + 1));
+}
+
+function canMakeTwoSetsPlusLoose(hand, firstType, secondType) {
+  const firstSets = possibleSets(firstType);
+  const secondSets = possibleSets(secondType);
+  return firstSets.some((first) => secondSets.some((second) => {
+    const counts = countTiles(hand);
+    if (!removeSet(counts, first)) return false;
+    if (!removeSet(counts, second)) return false;
+    return [...counts.values()].reduce((sum, count) => sum + count, 0) === 1;
+  }));
+}
+
+function possibleSets(type) {
+  if (type === "trip") {
+    return Array.from({ length: 9 }, (_, index) => [index + 1, index + 1, index + 1]);
+  }
+  return Array.from({ length: 7 }, (_, index) => [index + 1, index + 2, index + 3]);
+}
+
+function countTiles(hand) {
+  const counts = new Map();
+  hand.forEach((value) => counts.set(value, (counts.get(value) || 0) + 1));
+  return counts;
+}
+
+function removeSet(counts, set) {
+  for (const value of set) {
+    if ((counts.get(value) || 0) <= 0) return false;
+    counts.set(value, counts.get(value) - 1);
+  }
+  return true;
 }
