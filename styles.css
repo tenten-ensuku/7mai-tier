@@ -623,6 +623,104 @@ main {
   line-height: 1;
 }
 
+.clear-effect {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.18) 48%, rgba(255, 255, 255, 0));
+  transition: opacity 180ms ease, visibility 180ms ease;
+}
+
+.clear-effect.is-visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.clear-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.confetti-petal {
+  position: absolute;
+  top: -12vh;
+  width: 12px;
+  height: 18px;
+  border-radius: 999px 999px 999px 2px;
+  box-shadow: 0 1px 0 rgba(36, 33, 36, 0.18);
+  opacity: 0;
+  transform: translate3d(0, -12vh, 0) rotate(0deg) scale(var(--scale));
+  animation: confetti-fall var(--duration) cubic-bezier(0.2, 0.64, 0.36, 1) var(--delay) forwards;
+}
+
+.clear-text {
+  position: relative;
+  z-index: 1;
+  padding: 14px 28px 16px;
+  border: 4px solid var(--accent);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--accent);
+  font-family: "Arial Black", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+  font-size: clamp(58px, 12vw, 148px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: 0;
+  text-shadow: 3px 3px 0 #ffffff, 6px 6px 0 rgba(36, 33, 36, 0.18);
+  transform: scale(0.86);
+  opacity: 0;
+}
+
+.clear-effect.is-visible .clear-text {
+  animation: clear-pop 760ms cubic-bezier(0.16, 1.22, 0.26, 1) 120ms forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -12vh, 0) rotate(0deg) scale(var(--scale));
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift), 112vh, 0) rotate(var(--spin)) scale(var(--scale));
+  }
+}
+
+@keyframes clear-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+
+  72% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti-petal,
+  .clear-text {
+    animation-duration: 1ms;
+  }
+}
+
 @media (max-width: 760px) {
   .app-header {
     align-items: flex-start;

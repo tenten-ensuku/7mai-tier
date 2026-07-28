@@ -1,5 +1,5 @@
 const STORAGE_KEY = "nanamai-tier-state-v2";
-const APP_VERSION = 14;
+const APP_VERSION = 15;
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
@@ -42,6 +42,8 @@ const CARD_CORRECT_TIER = new Map(
 let draggedId = null;
 let autoScrollFrame = null;
 let lastDragY = 0;
+let clearEffectTimer = null;
+let clearWasComplete = false;
 const marks = new Map();
 const GENERATOR_LABELS = {
   seqSeq: "順子順子+1枚",
@@ -168,6 +170,56 @@ function enforceTierLimit(zone) {
   [...zone.querySelectorAll(".shape-card")]
     .slice(tierCapacity(zone))
     .forEach((card) => pool.append(card));
+}
+
+function zoneCardIds(zoneId) {
+  return [...document.querySelector(`[data-zone="${zoneId}"]`).querySelectorAll(".shape-card")].map((card) => card.dataset.id);
+}
+
+function isClearState() {
+  return Object.entries(CORRECT_PLACEMENTS).every(([zone, expectedIds]) => {
+    const actualIds = zoneCardIds(zone);
+    return actualIds.length === expectedIds.length && actualIds.every((id) => expectedIds.includes(id));
+  }) && zoneCardIds("pool").length === 0;
+}
+
+function hideClearEffect() {
+  const effect = document.getElementById("clearEffect");
+  if (!effect) return;
+  effect.classList.remove("is-visible");
+  effect.setAttribute("aria-hidden", "true");
+  const confetti = document.getElementById("clearConfetti");
+  if (confetti) confetti.innerHTML = "";
+}
+
+function showClearEffect() {
+  const effect = document.getElementById("clearEffect");
+  const confetti = document.getElementById("clearConfetti");
+  if (!effect || !confetti) return;
+  window.clearTimeout(clearEffectTimer);
+  confetti.innerHTML = "";
+  const colors = ["#e71954", "#f8b500", "#1d6fe8", "#16a06b", "#ffffff"];
+  for (let i = 0; i < 96; i += 1) {
+    const petal = document.createElement("span");
+    petal.className = "confetti-petal";
+    petal.style.left = `${Math.random() * 100}%`;
+    petal.style.background = colors[i % colors.length];
+    petal.style.setProperty("--delay", `${Math.random() * 0.65}s`);
+    petal.style.setProperty("--duration", `${2.4 + Math.random() * 1.2}s`);
+    petal.style.setProperty("--drift", `${Math.round((Math.random() - 0.5) * 220)}px`);
+    petal.style.setProperty("--spin", `${Math.round(360 + Math.random() * 720)}deg`);
+    petal.style.setProperty("--scale", `${0.7 + Math.random() * 0.7}`);
+    confetti.append(petal);
+  }
+  effect.classList.add("is-visible");
+  effect.setAttribute("aria-hidden", "false");
+  clearEffectTimer = window.setTimeout(hideClearEffect, 3600);
+}
+
+function evaluateClearState() {
+  const isComplete = isClearState();
+  if (isComplete && !clearWasComplete) showClearEffect();
+  clearWasComplete = isComplete;
 }
 
 function updateAutoScroll(clientY) {
@@ -345,6 +397,7 @@ function render() {
     sortTierZone(element);
     enforceTierLimit(element);
   });
+  clearWasComplete = isClearState();
 }
 
 function setupDrops() {
@@ -369,6 +422,7 @@ function setupDrops() {
       sortTierZone(zone);
       stopAutoScroll();
       saveState();
+      evaluateClearState();
     });
   });
   document.addEventListener("dragover", (event) => {
@@ -379,6 +433,8 @@ function setupDrops() {
 
 document.getElementById("resetButton").addEventListener("click", () => {
   localStorage.removeItem(STORAGE_KEY);
+  clearWasComplete = false;
+  hideClearEffect();
   render();
 });
 
