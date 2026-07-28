@@ -211,6 +211,7 @@ main {
   justify-content: center;
   gap: 6px;
   padding: 4px 8px;
+  cursor: pointer;
 }
 
 .generated-wait-label {
@@ -221,7 +222,8 @@ main {
 
 .generated-wait-tiles {
   display: flex;
-  align-items: end;
+  align-items: center;
+  gap: 1px;
 }
 
 .generated-wait-cover {
@@ -245,10 +247,16 @@ main {
   font-weight: 700;
 }
 
-.generated-tiles .tile,
-.generated-wait-tiles .tile {
+.generated-tiles .tile {
   width: 34px;
   height: 46px;
+}
+
+.wait-tile {
+  width: 15px;
+  height: 21px;
+  object-fit: contain;
+  border-radius: 2px;
 }
 
 .pool-heading {
@@ -551,6 +559,7 @@ main {
   min-height: 30px;
   display: grid;
   place-items: center;
+  cursor: pointer;
 }
 
 .wait-line {
@@ -560,6 +569,15 @@ main {
   font-weight: 700;
   text-align: center;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.wait-prefix {
+  color: var(--muted);
+  line-height: 1;
 }
 
 .wait-cover {
@@ -662,10 +680,14 @@ main {
     grid-column: 1 / -1;
   }
 
-  .generated-tiles .tile,
-  .generated-wait-tiles .tile {
+  .generated-tiles .tile {
     width: 28px;
     height: 38px;
+  }
+
+  .wait-tile {
+    width: 14px;
+    height: 19px;
   }
 
   .generated-waits {

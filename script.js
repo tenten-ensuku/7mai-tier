@@ -1,5 +1,5 @@
 const STORAGE_KEY = "nanamai-tier-state-v2";
-const APP_VERSION = 11;
+const APP_VERSION = 12;
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
@@ -55,11 +55,27 @@ function suitedTilePath(suit, number) {
   return `tiles/${SUIT_PREFIX[suit]}${number}-66-90-l.png`;
 }
 
-function waitText(waits) {
-  return waits.map((wait) => {
-    const tile = tileInfo(wait);
-    return tile.suit === "z" ? `${tile.number}字` : `${tile.number}s`;
-  }).join(" / ");
+function appendWaitTile(container, src, alt) {
+  const img = document.createElement("img");
+  img.className = "wait-tile";
+  img.src = src;
+  img.alt = alt;
+  img.draggable = false;
+  container.append(img);
+}
+
+function renderCardWaits(container, waits) {
+  container.innerHTML = "";
+  const label = document.createElement("span");
+  label.className = "wait-prefix";
+  label.textContent = "待ち";
+  container.append(label);
+  waits.forEach((wait) => appendWaitTile(container, tilePath(wait), tileInfo(wait).label));
+}
+
+function renderGeneratedWaits(container, waits, suit) {
+  container.innerHTML = "";
+  waits.forEach((number) => appendWaitTile(container, suitedTilePath(suit, number), `${number}${suit}`));
 }
 
 function defaultState() {
@@ -186,8 +202,8 @@ function createCard(shape, name, count) {
     tiles.append(img);
   });
   renderStack(card, shape);
-  card.querySelector(".wait-line").textContent = `待ち ${waitText(shape.waits)}`;
-  card.querySelector(".wait-cover").addEventListener("click", (event) => {
+  renderCardWaits(card.querySelector(".wait-line"), shape.waits);
+  card.querySelector(".wait-reveal").addEventListener("click", (event) => {
     event.stopPropagation();
     card.classList.toggle("wait-revealed");
   });
@@ -349,7 +365,7 @@ announceCloseButton.addEventListener("click", () => {
   announceButton.focus();
 });
 
-document.querySelector(".generated-wait-cover").addEventListener("click", (event) => {
+document.querySelector(".generated-waits").addEventListener("click", (event) => {
   event.stopPropagation();
   document.getElementById("generatorResult").classList.toggle("waits-revealed");
 });
@@ -382,14 +398,7 @@ function generatePracticeShape(kind) {
     img.draggable = false;
     tiles.append(img);
   });
-  generated.waits.forEach((number) => {
-    const img = document.createElement("img");
-    img.className = "tile";
-    img.src = suitedTilePath(suit, number);
-    img.alt = `${number}${suit}`;
-    img.draggable = false;
-    waits.append(img);
-  });
+  renderGeneratedWaits(waits, generated.waits, suit);
   meta.textContent = `${GENERATOR_LABELS[kind]} / ${generated.hand.join("")}${suit}`;
 }
 
