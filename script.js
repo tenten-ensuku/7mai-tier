@@ -1,5 +1,5 @@
 const STORAGE_KEY = "nanamai-tier-state-v2";
-const APP_VERSION = 9;
+const APP_VERSION = 10;
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
@@ -25,7 +25,11 @@ const SHAPES = [
 ];
 
 const zones = ["S", "A", "B", "C", "pool"];
+const tierZones = new Set(["S", "A", "B", "C"]);
+const shapeOrder = new Map(SHAPES.map((shape, index) => [shape.id, index]));
 let draggedId = null;
+let autoScrollFrame = null;
+let lastDragY = 0;
 const marks = new Map();
 const GENERATOR_LABELS = {
   seqSeq: "順子順子+1枚",
@@ -107,6 +111,42 @@ function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ placements, names, counts, marks: savedMarks }));
 }
 
+function cardCount(card) {
+  const value = Number.parseInt(card.querySelector(".count-input")?.value || "", 10);
+  return Number.isFinite(value) ? value : 0;
+}
+
+function sortTierZone(zone) {
+  if (!zone || !tierZones.has(zone.dataset.zone)) return;
+  [...zone.querySelectorAll(".shape-card")]
+    .sort((a, b) => cardCount(b) - cardCount(a) || (shapeOrder.get(a.dataset.id) || 0) - (shapeOrder.get(b.dataset.id) || 0))
+    .forEach((card) => zone.append(card));
+}
+
+function updateAutoScroll(clientY) {
+  lastDragY = clientY;
+  if (!autoScrollFrame) autoScrollFrame = requestAnimationFrame(runAutoScroll);
+}
+
+function runAutoScroll() {
+  const edge = 96;
+  const maxSpeed = 28;
+  const viewportHeight = window.innerHeight;
+  let delta = 0;
+  if (lastDragY < edge) {
+    delta = -Math.ceil(((edge - lastDragY) / edge) * maxSpeed);
+  } else if (lastDragY > viewportHeight - edge) {
+    delta = Math.ceil(((lastDragY - (viewportHeight - edge)) / edge) * maxSpeed);
+  }
+  if (delta) window.scrollBy(0, delta);
+  autoScrollFrame = draggedId && delta ? requestAnimationFrame(runAutoScroll) : null;
+}
+
+function stopAutoScroll() {
+  if (autoScrollFrame) cancelAnimationFrame(autoScrollFrame);
+  autoScrollFrame = null;
+}
+
 function createCard(shape, name, count) {
   const card = document.getElementById("cardTemplate").content.firstElementChild.cloneNode(true);
   card.dataset.id = shape.id;
@@ -133,6 +173,7 @@ function createCard(shape, name, count) {
   });
   countInput.addEventListener("input", () => {
     countInput.value = countInput.value.replace(/\D/g, "");
+    sortTierZone(card.closest(".drop-zone"));
     saveState();
   });
   const tiles = card.querySelector(".tiles");
@@ -167,6 +208,7 @@ function createCard(shape, name, count) {
   });
   card.addEventListener("dragend", () => {
     draggedId = null;
+    stopAutoScroll();
     card.classList.remove("dragging");
     saveState();
   });
@@ -252,6 +294,7 @@ function render() {
       const shape = byId.get(id);
       if (shape) element.append(createCard(shape, state.names[id], state.counts[id]));
     });
+    sortTierZone(element);
   });
 }
 
@@ -259,6 +302,7 @@ function setupDrops() {
   document.querySelectorAll(".drop-zone").forEach((zone) => {
     zone.addEventListener("dragover", (event) => {
       event.preventDefault();
+      updateAutoScroll(event.clientY);
       zone.classList.add("drag-over");
     });
     zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
@@ -269,9 +313,15 @@ function setupDrops() {
       const card = document.querySelector(`.shape-card[data-id="${id}"]`);
       if (!card) return;
       zone.append(card);
+      sortTierZone(zone);
+      stopAutoScroll();
       saveState();
     });
   });
+  document.addEventListener("dragover", (event) => {
+    if (draggedId) updateAutoScroll(event.clientY);
+  });
+  document.addEventListener("drop", stopAutoScroll);
 }
 
 document.getElementById("resetButton").addEventListener("click", () => {
