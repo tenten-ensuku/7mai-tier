@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>7枚形ティア表</title>
-  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="styles.css?v=14">
 </head>
 <body>
   <header class="app-header">
@@ -38,25 +38,39 @@
           <li>アナウンスボタンを追加し、更新内容を確認できるように変更。</li>
           <li>待ち表示を小型の麻雀牌画像に変更し、表示後もクリックで再度隠せるように変更。</li>
           <li>CSS/JavaScriptのキャッシュ対策を追加し、更新後の修正が確実に反映されるように変更。</li>
+          <li>正解配置とTierごとの固定枠数（S1/A8/B9/C1）を追加し、カード間の余白を削除。</li>
+          <li>各Tierラベルの下に受け入れ枚数の目安を表示。</li>
         </ul>
       </article>
     </section>
 
     <section class="tier-board" aria-label="ティア表">
-      <div class="tier-row" data-tier="S神">
-        <div class="tier-label">S神</div>
+      <div class="tier-row" data-tier="S神" data-limit="1">
+        <div class="tier-label">
+          <span class="tier-rank">S神 1</span>
+          <span class="tier-reception">受け入れ17枚</span>
+        </div>
         <div class="drop-zone" data-zone="S"></div>
       </div>
-      <div class="tier-row" data-tier="A強い">
-        <div class="tier-label">A強い</div>
+      <div class="tier-row" data-tier="A強い" data-limit="8">
+        <div class="tier-label">
+          <span class="tier-rank">A強い 8</span>
+          <span class="tier-reception">受け入れ10～14枚</span>
+        </div>
         <div class="drop-zone" data-zone="A"></div>
       </div>
-      <div class="tier-row" data-tier="B普通">
-        <div class="tier-label">B普通</div>
+      <div class="tier-row" data-tier="B普通" data-limit="9">
+        <div class="tier-label">
+          <span class="tier-rank">B普通 9</span>
+          <span class="tier-reception">受け入れ7～9枚</span>
+        </div>
         <div class="drop-zone" data-zone="B"></div>
       </div>
-      <div class="tier-row" data-tier="C最弱">
-        <div class="tier-label">C最弱</div>
+      <div class="tier-row" data-tier="C最弱" data-limit="1">
+        <div class="tier-label">
+          <span class="tier-rank">C最弱 1</span>
+          <span class="tier-reception">受け入れ5枚</span>
+        </div>
         <div class="drop-zone" data-zone="C"></div>
       </div>
     </section>
@@ -122,6 +136,6 @@
     </article>
   </template>
 
-  <script src="script.js?v=13"></script>
+  <script src="script.js?v=14"></script>
 </body>
 </html>

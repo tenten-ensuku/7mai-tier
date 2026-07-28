@@ -1,5 +1,5 @@
 const STORAGE_KEY = "nanamai-tier-state-v2";
-const APP_VERSION = 13;
+const APP_VERSION = 14;
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
@@ -27,6 +27,18 @@ const SHAPES = [
 const zones = ["S", "A", "B", "C", "pool"];
 const tierZones = new Set(["S", "A", "B", "C"]);
 const shapeOrder = new Map(SHAPES.map((shape, index) => [shape.id, index]));
+const CORRECT_PLACEMENTS = {
+  S: ["H"],
+  A: ["E", "F", "N", "R", "S", "P", "J", "K"],
+  B: ["A", "B", "C", "G", "L", "O", "Q", "D", "I"],
+  C: ["M"],
+};
+const TIER_LIMITS = Object.fromEntries(
+  Object.entries(CORRECT_PLACEMENTS).map(([zone, ids]) => [zone, ids.length]),
+);
+const CARD_CORRECT_TIER = new Map(
+  Object.entries(CORRECT_PLACEMENTS).flatMap(([zone, ids]) => ids.map((id) => [id, zone])),
+);
 let draggedId = null;
 let autoScrollFrame = null;
 let lastDragY = 0;
@@ -139,6 +151,25 @@ function sortTierZone(zone) {
     .forEach((card) => zone.append(card));
 }
 
+function tierCapacity(zone) {
+  return TIER_LIMITS[zone?.dataset.zone] ?? Infinity;
+}
+
+function canDropIntoZone(zone, card) {
+  if (!zone || !card) return false;
+  if (!tierZones.has(zone.dataset.zone)) return true;
+  const cardsInZone = [...zone.querySelectorAll(".shape-card")].filter((existing) => existing !== card);
+  return cardsInZone.length < tierCapacity(zone);
+}
+
+function enforceTierLimit(zone) {
+  if (!zone || !tierZones.has(zone.dataset.zone)) return;
+  const pool = document.querySelector('[data-zone="pool"]');
+  [...zone.querySelectorAll(".shape-card")]
+    .slice(tierCapacity(zone))
+    .forEach((card) => pool.append(card));
+}
+
 function updateAutoScroll(clientY) {
   lastDragY = clientY;
   if (!autoScrollFrame) autoScrollFrame = requestAnimationFrame(runAutoScroll);
@@ -166,6 +197,7 @@ function stopAutoScroll() {
 function createCard(shape, name, count) {
   const card = document.getElementById("cardTemplate").content.firstElementChild.cloneNode(true);
   card.dataset.id = shape.id;
+  card.dataset.correctTier = CARD_CORRECT_TIER.get(shape.id) || "";
   card.classList.add("name-concealed", "count-concealed");
   card.title = `${shape.id}: ${shape.hand.join("")}`;
   const cardName = card.querySelector(".card-name");
@@ -311,6 +343,7 @@ function render() {
       if (shape) element.append(createCard(shape, state.names[id], state.counts[id]));
     });
     sortTierZone(element);
+    enforceTierLimit(element);
   });
 }
 
@@ -328,6 +361,10 @@ function setupDrops() {
       const id = event.dataTransfer.getData("text/plain") || draggedId;
       const card = document.querySelector(`.shape-card[data-id="${id}"]`);
       if (!card) return;
+      if (!canDropIntoZone(zone, card)) {
+        stopAutoScroll();
+        return;
+      }
       zone.append(card);
       sortTierZone(zone);
       stopAutoScroll();
