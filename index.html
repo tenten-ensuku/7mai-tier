@@ -13,11 +13,33 @@
       <p>Enskdrill 7枚形 A-S / 19種類 <span class="app-version" id="appVersion"></span></p>
     </div>
     <div class="toolbar" aria-label="操作">
+      <button id="announceButton" type="button" aria-expanded="false" aria-controls="announcePanel">アナウンス</button>
       <button id="resetButton" type="button">初期化</button>
     </div>
   </header>
 
   <main>
+    <section class="announce-panel" id="announcePanel" aria-label="アップデート修正内容" hidden>
+      <div class="announce-heading">
+        <h2>アップデート修正内容</h2>
+        <button class="announce-close" id="announceCloseButton" type="button" aria-label="アナウンスを閉じる">閉じる</button>
+      </div>
+      <article class="announce-entry">
+        <h3>2026-07-28</h3>
+        <ul>
+          <li>C tier の表記を「C最弱」に変更。</li>
+          <li>プッシュごとにバージョン表示を更新する仕組みを追加。</li>
+          <li>カード名称、待ち牌、受け入れ枚数を黒カードで個別に隠す表示へ調整。</li>
+          <li>受け入れ枚数を待ち表示の右側に配置。</li>
+          <li>裏面の待ち選択で、正解は赤、不正解は青で表示。</li>
+          <li>生成練習の結果に、クリックで見られる伏せた待ち牌表示を追加。</li>
+          <li>ドラッグ中に画面端へ近づくと自動スクロールするように変更。</li>
+          <li>Tier表内のカードを受け入れ枚数の多い順に自動整列。</li>
+          <li>アナウンスボタンを追加し、更新内容を確認できるように変更。</li>
+        </ul>
+      </article>
+    </section>
+
     <section class="tier-board" aria-label="ティア表">
       <div class="tier-row" data-tier="S神">
         <div class="tier-label">S神</div>

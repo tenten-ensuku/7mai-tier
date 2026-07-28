@@ -1,5 +1,5 @@
 const STORAGE_KEY = "nanamai-tier-state-v2";
-const APP_VERSION = 10;
+const APP_VERSION = 11;
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
@@ -330,6 +330,24 @@ document.getElementById("resetButton").addEventListener("click", () => {
 });
 
 document.getElementById("appVersion").textContent = `ver${APP_VERSION}`;
+
+const announceButton = document.getElementById("announceButton");
+const announcePanel = document.getElementById("announcePanel");
+const announceCloseButton = document.getElementById("announceCloseButton");
+
+function setAnnouncementOpen(isOpen) {
+  announcePanel.hidden = !isOpen;
+  announceButton.setAttribute("aria-expanded", String(isOpen));
+}
+
+announceButton.addEventListener("click", () => {
+  setAnnouncementOpen(announcePanel.hidden);
+});
+
+announceCloseButton.addEventListener("click", () => {
+  setAnnouncementOpen(false);
+  announceButton.focus();
+});
 
 document.querySelector(".generated-wait-cover").addEventListener("click", (event) => {
   event.stopPropagation();
