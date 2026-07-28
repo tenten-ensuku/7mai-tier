@@ -1,5 +1,5 @@
 const STORAGE_KEY = "nanamai-tier-state-v2";
-const APP_VERSION = 12;
+const APP_VERSION = 13;
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
