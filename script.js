@@ -1,11 +1,11 @@
 const STORAGE_KEY = "nanamai-tier-state-v2";
-const APP_VERSION = 15;
+const APP_VERSION = 16;
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
   { id: "A", name: "槓子使い", hand: [3, 4, 4, 5, 5, 5, 5], waits: [3, 4, 6], count: 9 },
   { id: "B", name: "スーパーノベタン", hand: [3, 4, 5, 6, 7, 8, 9], waits: [3, 6, 9], count: 9 },
-  { id: "C", name: "両面ノベタン", hand: [1, 2, 3, 4, 4, 5, 6], waits: [1, 4, 7], count: 9 },
+  { id: "C", name: "ノベタン亜両面", hand: [1, 2, 3, 4, 4, 5, 6], waits: [1, 4, 7], count: 9 },
   { id: "D", name: "エントツ", hand: [2, 3, 4, 4, 4, 13, 13], waits: [1, 4, 13], count: 7 },
   { id: "E", name: "最強４面", hand: [2, 3, 3, 3, 4, 5, 6], waits: [1, 2, 4, 7], count: 14 },
   { id: "F", name: "秀才４面", hand: [3, 3, 3, 4, 4, 5, 6], waits: [2, 4, 5, 7], count: 13 },
@@ -109,6 +109,7 @@ function loadState() {
     if (!stored) return defaultState();
     const state = defaultState();
     Object.assign(state.names, stored.names || {});
+    if (state.names.C === "両面ノベタン") state.names.C = "ノベタン亜両面";
     Object.assign(state.counts, stored.counts || {});
     Object.entries(stored.marks || {}).forEach(([id, values]) => {
       marks.set(id, new Set(Array.isArray(values) ? values.map(Number) : []));
