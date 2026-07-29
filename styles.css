@@ -162,7 +162,7 @@ main {
   align-content: flex-start;
   align-items: flex-start;
   flex-wrap: wrap;
-  gap: 28px 0;
+  gap: 0;
   min-height: 100%;
   padding: 8px 8px 42px;
 }
@@ -283,9 +283,39 @@ main {
 }
 
 .pool-grid {
+  gap: 28px 0;
   min-height: 132px;
   border: 2px dashed var(--line);
   background: rgba(255, 255, 255, 0.62);
+}
+
+.tier-slot {
+  position: relative;
+  flex: 0 0 220px;
+  width: 220px;
+  height: 198px;
+  border: 2px dashed rgba(36, 33, 36, 0.38);
+  background:
+    linear-gradient(135deg, rgba(231, 25, 84, 0.06), rgba(29, 111, 232, 0.04)),
+    rgba(255, 255, 255, 0.42);
+}
+
+.tier-slot::after {
+  content: attr(data-slot-index);
+  position: absolute;
+  right: 6px;
+  bottom: 5px;
+  color: rgba(36, 33, 36, 0.26);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.tier-slot > .shape-card {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  z-index: 1;
 }
 
 .shape-card {
@@ -747,6 +777,12 @@ main {
   .shape-card {
     width: min(100%, 210px);
     height: 168px;
+  }
+
+  .tier-slot {
+    flex-basis: min(100%, 210px);
+    width: min(100%, 210px);
+    height: 196px;
   }
 
   .card-name {

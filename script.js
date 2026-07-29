@@ -1,5 +1,5 @@
 const STORAGE_KEY = "nanamai-tier-state-v2";
-const APP_VERSION = 16;
+const APP_VERSION = 17;
 const SUIT_PREFIX = { m: "man", p: "pin", s: "sou", z: "ji" };
 
 const SHAPES = [
@@ -128,7 +128,7 @@ function loadState() {
 function saveState() {
   const placements = Object.fromEntries(zones.map((zone) => [
     zone,
-    [...document.querySelector(`[data-zone="${zone}"]`).querySelectorAll(".shape-card")].map((card) => card.dataset.id),
+    zoneCards(document.querySelector(`[data-zone="${zone}"]`)).map((card) => card.dataset.id),
   ]));
   const names = Object.fromEntries([...document.querySelectorAll(".shape-card")].map((card) => [
     card.dataset.id,
@@ -149,32 +149,68 @@ function cardCount(card) {
 
 function sortTierZone(zone) {
   if (!zone || !tierZones.has(zone.dataset.zone)) return;
-  [...zone.querySelectorAll(".shape-card")]
-    .sort((a, b) => cardCount(b) - cardCount(a) || (shapeOrder.get(a.dataset.id) || 0) - (shapeOrder.get(b.dataset.id) || 0))
-    .forEach((card) => zone.append(card));
+  const sortedCards = zoneCards(zone).sort(
+    (a, b) => cardCount(b) - cardCount(a) || (shapeOrder.get(a.dataset.id) || 0) - (shapeOrder.get(b.dataset.id) || 0),
+  );
+  placeCardsInTierSlots(zone, sortedCards);
 }
 
 function tierCapacity(zone) {
   return TIER_LIMITS[zone?.dataset.zone] ?? Infinity;
 }
 
+function zoneCards(zone) {
+  return [...zone.querySelectorAll(".shape-card")];
+}
+
+function tierSlots(zone) {
+  return [...zone.querySelectorAll(".tier-slot")];
+}
+
+function ensureTierSlots(zone) {
+  if (!zone || !tierZones.has(zone.dataset.zone)) return;
+  zone.innerHTML = "";
+  for (let i = 0; i < tierCapacity(zone); i += 1) {
+    const slot = document.createElement("div");
+    slot.className = "tier-slot";
+    slot.dataset.slotIndex = String(i + 1);
+    zone.append(slot);
+  }
+}
+
+function placeCardsInTierSlots(zone, cards) {
+  const slots = tierSlots(zone);
+  cards.forEach((card, index) => {
+    if (slots[index]) slots[index].append(card);
+  });
+}
+
+function placeCardInZone(zone, card) {
+  if (!tierZones.has(zone.dataset.zone)) {
+    zone.append(card);
+    return;
+  }
+  const slot = tierSlots(zone).find((candidate) => !candidate.querySelector(".shape-card"));
+  if (slot) slot.append(card);
+}
+
 function canDropIntoZone(zone, card) {
   if (!zone || !card) return false;
   if (!tierZones.has(zone.dataset.zone)) return true;
-  const cardsInZone = [...zone.querySelectorAll(".shape-card")].filter((existing) => existing !== card);
+  const cardsInZone = zoneCards(zone).filter((existing) => existing !== card);
   return cardsInZone.length < tierCapacity(zone);
 }
 
 function enforceTierLimit(zone) {
   if (!zone || !tierZones.has(zone.dataset.zone)) return;
   const pool = document.querySelector('[data-zone="pool"]');
-  [...zone.querySelectorAll(".shape-card")]
+  zoneCards(zone)
     .slice(tierCapacity(zone))
     .forEach((card) => pool.append(card));
 }
 
 function zoneCardIds(zoneId) {
-  return [...document.querySelector(`[data-zone="${zoneId}"]`).querySelectorAll(".shape-card")].map((card) => card.dataset.id);
+  return zoneCards(document.querySelector(`[data-zone="${zoneId}"]`)).map((card) => card.dataset.id);
 }
 
 function isClearState() {
@@ -388,12 +424,19 @@ function render() {
   zones.forEach((zone) => {
     document.querySelector(`[data-zone="${zone}"]`).innerHTML = "";
   });
+  document.querySelectorAll(".drop-zone").forEach(ensureTierSlots);
   const byId = new Map(SHAPES.map((shape) => [shape.id, shape]));
   zones.forEach((zone) => {
     const element = document.querySelector(`[data-zone="${zone}"]`);
     state.placements[zone].forEach((id) => {
       const shape = byId.get(id);
-      if (shape) element.append(createCard(shape, state.names[id], state.counts[id]));
+      if (!shape) return;
+      const card = createCard(shape, state.names[id], state.counts[id]);
+      if (tierZones.has(zone) && zoneCards(element).length >= tierCapacity(element)) {
+        document.querySelector('[data-zone="pool"]').append(card);
+        return;
+      }
+      placeCardInZone(element, card);
     });
     sortTierZone(element);
     enforceTierLimit(element);
@@ -419,7 +462,9 @@ function setupDrops() {
         stopAutoScroll();
         return;
       }
-      zone.append(card);
+      const originZone = card.closest(".drop-zone");
+      placeCardInZone(zone, card);
+      if (originZone && originZone !== zone) sortTierZone(originZone);
       sortTierZone(zone);
       stopAutoScroll();
       saveState();
